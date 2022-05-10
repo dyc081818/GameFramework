@@ -111,6 +111,14 @@ namespace GameFramework.WebRequest
         void GetAllWebRequestInfos(List<TaskInfo> results);
 
         /// <summary>
+        /// 增加 Web 头部请求任务。
+        /// </summary>
+        /// <param name="webRequestUri"></param>
+        /// <param name="userData"></param>
+        /// <returns></returns>
+        int AddHeaderRequest(string webRequestUri, object userData);
+
+        /// <summary>
         /// 增加 Web 请求任务。
         /// </summary>
         /// <param name="webRequestUri">Web 请求地址。</param>

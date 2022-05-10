@@ -5,6 +5,8 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace GameFramework.WebRequest
 {
     /// <summary>
@@ -12,6 +14,7 @@ namespace GameFramework.WebRequest
     /// </summary>
     public sealed class WebRequestAgentHelperCompleteEventArgs : GameFrameworkEventArgs
     {
+        private Dictionary<string, string> m_WebResponseHeaders;
         private byte[] m_WebResponseBytes;
 
         /// <summary>
@@ -19,18 +22,22 @@ namespace GameFramework.WebRequest
         /// </summary>
         public WebRequestAgentHelperCompleteEventArgs()
         {
+            m_WebResponseHeaders = null;
             m_WebResponseBytes = null;
         }
 
         /// <summary>
         /// 创建 Web 请求代理辅助器完成事件。
         /// </summary>
+        /// <param name="headers">相应数据头</param>
         /// <param name="webResponseBytes">Web 响应的数据流。</param>
         /// <returns>创建的 Web 请求代理辅助器完成事件。</returns>
-        public static WebRequestAgentHelperCompleteEventArgs Create(byte[] webResponseBytes)
+        public static WebRequestAgentHelperCompleteEventArgs Create(Dictionary<string, string> headers, byte[] webResponseBytes)
         {
             WebRequestAgentHelperCompleteEventArgs webRequestAgentHelperCompleteEventArgs = ReferencePool.Acquire<WebRequestAgentHelperCompleteEventArgs>();
+            webRequestAgentHelperCompleteEventArgs.m_WebResponseHeaders = headers;
             webRequestAgentHelperCompleteEventArgs.m_WebResponseBytes = webResponseBytes;
+
             return webRequestAgentHelperCompleteEventArgs;
         }
 
@@ -39,7 +46,17 @@ namespace GameFramework.WebRequest
         /// </summary>
         public override void Clear()
         {
+            m_WebResponseHeaders = null;
             m_WebResponseBytes = null;
+        }
+
+        /// <summary>
+        /// 获取web 相应数据头
+        /// </summary>
+        /// <returns>数据头字典</returns>
+        public Dictionary<string, string> GetWebResponseHeaders()
+        {
+            return m_WebResponseHeaders;
         }
 
         /// <summary>

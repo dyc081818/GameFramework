@@ -5,6 +5,8 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace GameFramework.WebRequest
 {
     internal sealed partial class WebRequestManager : GameFrameworkModule, IWebRequestManager
@@ -19,7 +21,7 @@ namespace GameFramework.WebRequest
             private float m_WaitTime;
 
             public GameFrameworkAction<WebRequestAgent> WebRequestAgentStart;
-            public GameFrameworkAction<WebRequestAgent, byte[]> WebRequestAgentSuccess;
+            public GameFrameworkAction<WebRequestAgent, Dictionary<string, string>, byte[]> WebRequestAgentSuccess;
             public GameFrameworkAction<WebRequestAgent, string> WebRequestAgentFailure;
 
             /// <summary>
@@ -122,6 +124,16 @@ namespace GameFramework.WebRequest
                     WebRequestAgentStart(this);
                 }
 
+                //仅请求头部
+                if (m_Task.HeaderRequest)
+                {
+                    m_Helper.RequestHeader(m_Task.WebRequestUri, m_Task.UserData);
+                    m_WaitTime = 0f;
+
+                    return StartTaskStatus.CanResume;
+                }
+
+                //正常请求
                 byte[] postData = m_Task.GetPostData();
                 if (postData == null)
                 {
@@ -153,7 +165,7 @@ namespace GameFramework.WebRequest
 
                 if (WebRequestAgentSuccess != null)
                 {
-                    WebRequestAgentSuccess(this, e.GetWebResponseBytes());
+                    WebRequestAgentSuccess(this, e.GetWebResponseHeaders(), e.GetWebResponseBytes());
                 }
 
                 m_Task.Done = true;

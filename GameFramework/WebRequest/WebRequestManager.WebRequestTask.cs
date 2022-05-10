@@ -20,6 +20,7 @@ namespace GameFramework.WebRequest
             private string m_WebRequestUri;
             private byte[] m_PostData;
             private float m_Timeout;
+            private bool m_HeaderRequest = false;
 
             public WebRequestTask()
             {
@@ -27,6 +28,7 @@ namespace GameFramework.WebRequest
                 m_WebRequestUri = null;
                 m_PostData = null;
                 m_Timeout = 0f;
+                m_HeaderRequest = false;
             }
 
             /// <summary>
@@ -78,6 +80,28 @@ namespace GameFramework.WebRequest
             }
 
             /// <summary>
+            /// 是否为头部请求
+            /// </summary>
+            public bool HeaderRequest
+            {
+                get
+                {
+                    return m_HeaderRequest;
+                }
+            }
+
+            public static WebRequestTask CreateHeaderTask(string webRequestUri, int priority, float timeout, object userData)
+            {
+                WebRequestTask webRequestTask = ReferencePool.Acquire<WebRequestTask>();
+                webRequestTask.Initialize(++s_Serial, null, priority, userData);
+                webRequestTask.m_WebRequestUri = webRequestUri;
+                webRequestTask.m_PostData = null;
+                webRequestTask.m_Timeout = timeout;
+                webRequestTask.m_HeaderRequest = true;
+                return webRequestTask;
+            }
+
+            /// <summary>
             /// 创建 Web 请求任务。
             /// </summary>
             /// <param name="webRequestUri">要发送的远程地址。</param>
@@ -94,6 +118,7 @@ namespace GameFramework.WebRequest
                 webRequestTask.m_WebRequestUri = webRequestUri;
                 webRequestTask.m_PostData = postData;
                 webRequestTask.m_Timeout = timeout;
+                webRequestTask.m_HeaderRequest = false;
                 return webRequestTask;
             }
 
@@ -107,6 +132,7 @@ namespace GameFramework.WebRequest
                 m_WebRequestUri = null;
                 m_PostData = null;
                 m_Timeout = 0f;
+                m_HeaderRequest = false;
             }
 
             /// <summary>

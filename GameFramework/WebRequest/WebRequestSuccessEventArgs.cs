@@ -5,6 +5,8 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace GameFramework.WebRequest
 {
     /// <summary>
@@ -12,6 +14,7 @@ namespace GameFramework.WebRequest
     /// </summary>
     public sealed class WebRequestSuccessEventArgs : GameFrameworkEventArgs
     {
+        private Dictionary<string, string> m_WebResponseHeaders;
         private byte[] m_WebResponseBytes;
 
         /// <summary>
@@ -21,6 +24,7 @@ namespace GameFramework.WebRequest
         {
             SerialId = 0;
             WebRequestUri = null;
+            m_WebResponseHeaders = null;
             m_WebResponseBytes = null;
             UserData = null;
         }
@@ -57,14 +61,16 @@ namespace GameFramework.WebRequest
         /// </summary>
         /// <param name="serialId">Web 请求任务的序列编号。</param>
         /// <param name="webRequestUri">Web 请求地址。</param>
+        /// <param name="headers">数据头</param>
         /// <param name="webResponseBytes">Web 响应的数据流。</param>
         /// <param name="userData">用户自定义数据。</param>
         /// <returns>创建的 Web 请求成功事件。</returns>
-        public static WebRequestSuccessEventArgs Create(int serialId, string webRequestUri, byte[] webResponseBytes, object userData)
+        public static WebRequestSuccessEventArgs Create(int serialId, string webRequestUri, Dictionary<string, string> headers, byte[] webResponseBytes, object userData)
         {
             WebRequestSuccessEventArgs webRequestSuccessEventArgs = ReferencePool.Acquire<WebRequestSuccessEventArgs>();
             webRequestSuccessEventArgs.SerialId = serialId;
             webRequestSuccessEventArgs.WebRequestUri = webRequestUri;
+            webRequestSuccessEventArgs.m_WebResponseHeaders = headers;
             webRequestSuccessEventArgs.m_WebResponseBytes = webResponseBytes;
             webRequestSuccessEventArgs.UserData = userData;
             return webRequestSuccessEventArgs;
@@ -77,8 +83,18 @@ namespace GameFramework.WebRequest
         {
             SerialId = 0;
             WebRequestUri = null;
+            m_WebResponseHeaders = null;
             m_WebResponseBytes = null;
             UserData = null;
+        }
+
+        /// <summary>
+        /// 获取web 相应数据头
+        /// </summary>
+        /// <returns>数据头</returns>
+        public Dictionary<string, string> GetWebResponseHeaders()
+        {
+            return m_WebResponseHeaders;
         }
 
         /// <summary>

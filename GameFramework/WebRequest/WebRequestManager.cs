@@ -218,6 +218,29 @@ namespace GameFramework.WebRequest
         }
 
         /// <summary>
+        /// 增加 Web 头请求任务。
+        /// </summary>
+        /// <param name="webRequestUri">Web 请求地址。</param>
+        /// <param name="userData">用户自定义数据</param>
+        /// <returns>新增 Web 请求任务的序列编号。</returns>
+        public int AddHeaderRequest(string webRequestUri, object userData)
+        {
+            if (string.IsNullOrEmpty(webRequestUri))
+            {
+                throw new GameFrameworkException("Web request uri is invalid.");
+            }
+
+            if (TotalAgentCount <= 0)
+            {
+                throw new GameFrameworkException("You must add web request agent first.");
+            }
+
+            WebRequestTask webRequestTask = WebRequestTask.CreateHeaderTask(webRequestUri, Constant.DefaultPriority, m_Timeout, userData);
+            m_TaskPool.AddTask(webRequestTask);
+            return webRequestTask.SerialId;
+        }
+
+        /// <summary>
         /// 增加 Web 请求任务。
         /// </summary>
         /// <param name="webRequestUri">Web 请求地址。</param>
@@ -460,11 +483,11 @@ namespace GameFramework.WebRequest
             }
         }
 
-        private void OnWebRequestAgentSuccess(WebRequestAgent sender, byte[] webResponseBytes)
+        private void OnWebRequestAgentSuccess(WebRequestAgent sender, Dictionary<string, string> headers, byte[] webResponseBytes)
         {
             if (m_WebRequestSuccessEventHandler != null)
             {
-                WebRequestSuccessEventArgs webRequestSuccessEventArgs = WebRequestSuccessEventArgs.Create(sender.Task.SerialId, sender.Task.WebRequestUri, webResponseBytes, sender.Task.UserData);
+                WebRequestSuccessEventArgs webRequestSuccessEventArgs = WebRequestSuccessEventArgs.Create(sender.Task.SerialId, sender.Task.WebRequestUri, headers, webResponseBytes, sender.Task.UserData);
                 m_WebRequestSuccessEventHandler(this, webRequestSuccessEventArgs);
                 ReferencePool.Release(webRequestSuccessEventArgs);
             }
